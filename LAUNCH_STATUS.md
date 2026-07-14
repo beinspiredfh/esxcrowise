@@ -43,6 +43,12 @@ GitHub deploy key added with read/write access, but SSH pushes from this environ
 You can't perform that action at this time.
 ```
 
+Browser upload fallback partially populated the GitHub repository with the core app, admin/backend routes, database files, migrations through `drizzle/0005_settlement_ledger.sql`, essential config files, lockfiles, public assets, tests, and `worker/index.ts`. The complete local source remains the source of truth until a clean Git push succeeds.
+
+Vercel GitHub App permissions were updated so Vercel can access `beinspiredfh/esxcrowise`. Vercel can now import the repository, but the current application is built for `vinext` / Cloudflare-style runtime, so the recommended production path remains Sites/Cloudflare unless the runtime is converted for Vercel.
+
+Latest Sites publish attempt resolved `git.chatgpt-team.site` through DNS-over-HTTPS, but outbound connection to the Sites Git endpoint on port 443 is still blocked from this environment.
+
 ## Next Publish Step
 
 Preferred route for Vercel:
