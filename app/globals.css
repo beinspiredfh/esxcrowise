@@ -1,0 +1,234 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f5fbff;
+  --foreground: #111827;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+.field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.field span {
+  color: #536275;
+  font-size: 0.75rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.field input,
+.field select {
+  min-height: 3rem;
+  width: 100%;
+  border: 1px solid #bdefff;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #111827;
+  font-weight: 800;
+  outline: none;
+  padding: 0 0.85rem;
+}
+
+.field input:focus,
+.field select:focus {
+  border-color: #00a8e8;
+  box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.18);
+}
+
+.primary,
+.secondary {
+  min-height: 2.85rem;
+  border-radius: 8px;
+  font-weight: 900;
+  padding: 0 1rem;
+}
+
+.primary {
+  border: 1px solid #00a8e8;
+  background: linear-gradient(135deg, #00a8e8, #00c2a8);
+  color: #ffffff;
+  box-shadow: 0 12px 24px rgba(0, 168, 232, 0.24);
+}
+
+.secondary {
+  border: 1px solid #ff5a5f;
+  background: #fff5f5;
+  color: #c8212b;
+}
+
+.toggle {
+  align-items: center;
+  color: #008a63;
+  display: inline-flex;
+  font-size: 0.9rem;
+  font-weight: 800;
+  gap: 0.5rem;
+  min-height: 2.85rem;
+}
+
+.toggle input {
+  accent-color: #00c2a8;
+  height: 1.1rem;
+  width: 1.1rem;
+}
+
+.transaction {
+  align-items: center;
+  background: #ffffff;
+  border: 1px solid #cdeffd;
+  border-radius: 8px;
+  color: #111827;
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: 1.3fr 0.9fr auto;
+  min-height: 4.5rem;
+  padding: 0.9rem;
+  text-align: left;
+  width: 100%;
+}
+
+.transaction.active {
+  border-color: #00a8e8;
+  box-shadow: 0 0 0 3px rgba(0, 168, 232, 0.14);
+}
+
+.transaction small {
+  color: #536275;
+  display: block;
+  font-size: 0.8rem;
+  font-weight: 700;
+  margin-top: 0.2rem;
+}
+
+.risk,
+.pill {
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 900;
+  padding: 0.4rem 0.65rem;
+  white-space: nowrap;
+}
+
+.risk.low,
+.pill.done {
+  background: #d9fbe8;
+  color: #006b4d;
+}
+
+.risk.medium {
+  background: #fff1c2;
+  color: #7a4b00;
+}
+
+.risk.high {
+  background: #ffe0e3;
+  color: #b4162a;
+}
+
+.pill {
+  background: #e9f6ff;
+  color: #536275;
+}
+
+.status-dot {
+  background: #bfdbfe;
+  border-radius: 999px;
+  flex: 0 0 auto;
+  height: 0.9rem;
+  margin-top: 0.3rem;
+  width: 0.9rem;
+}
+
+.status-dot.on {
+  background: #00a8e8;
+  box-shadow: 0 0 0 4px rgba(0, 168, 232, 0.16);
+}
+
+.trust-card {
+  background:
+    linear-gradient(135deg, rgba(8, 26, 58, 0.96), rgba(0, 168, 232, 0.82) 58%, rgba(255, 90, 95, 0.88)),
+    #081a3a;
+  border-radius: 8px;
+  color: #ffffff;
+  padding: 1.1rem;
+}
+
+.trust-card h2 {
+  font-size: 1.8rem;
+  font-weight: 950;
+}
+
+.trust-card p {
+  color: #dff7ff;
+}
+
+.score {
+  align-items: center;
+  background: #ffd166;
+  border-radius: 8px;
+  color: #111827;
+  display: flex;
+  flex-direction: column;
+  font-size: 2rem;
+  font-weight: 950;
+  gap: 0.1rem;
+  height: 5rem;
+  justify-content: center;
+  line-height: 1;
+  min-width: 6.4rem;
+  padding: 0.7rem;
+}
+
+.score small {
+  color: #314158;
+  font-size: 0.68rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.score span {
+  display: block;
+}
+
+@media (max-width: 720px) {
+  .transaction {
+    grid-template-columns: 1fr;
+  }
+
+  .risk,
+  .pill {
+    justify-self: start;
+  }
+}
