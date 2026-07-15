@@ -1,4 +1,5 @@
-import { env } from "cloudflare:workers";
+import { getD1Binding, getRuntimeSecret } from "./_runtimeEnv";
+import * as memoryStore from "./_memoryStore";
 
 type D1 = D1Database;
 
@@ -275,11 +276,16 @@ const disputeColumnStatements = [
 ] as const;
 
 function getBinding(): D1 {
-  if (!env.DB) {
+  const db = getD1Binding();
+  if (!db) {
     throw new Error("D1 binding DB is not available.");
   }
 
-  return env.DB;
+  return db;
+}
+
+function hasBinding() {
+  return Boolean(getD1Binding());
 }
 
 function id(prefix: string) {
@@ -352,6 +358,7 @@ function riskFor(amountKobo: number, category: string) {
 }
 
 export async function initDb() {
+  if (!hasBinding()) return memoryStore.initDb();
   const db = getBinding();
   await db.batch(schemaStatements.map((statement) => db.prepare(statement)));
   await ensureColumns(db, "escrows", escrowColumnStatements);
@@ -544,6 +551,7 @@ async function seedLaunchData(db: D1) {
 }
 
 export async function getDashboard() {
+  if (!hasBinding()) return memoryStore.getDashboard();
   await initDb();
   const db = getBinding();
   await backfillEscrowAmounts(db);
@@ -727,6 +735,7 @@ async function getAdminSummary(db: D1) {
 }
 
 export async function createEscrow(input: EscrowInput) {
+  if (!hasBinding()) return memoryStore.createEscrow(input);
   await initDb();
   const db = getBinding();
   const settings = await getPlatformSettings();
@@ -809,6 +818,7 @@ export async function initializePayment(
   buyerEmail: string,
   origin: string
 ) {
+  if (!hasBinding()) return memoryStore.initializePayment(escrowId, buyerEmail, origin);
   await initDb();
   const db = getBinding();
   const escrow = await db
@@ -893,6 +903,7 @@ export async function initializePayment(
 }
 
 export async function verifyPaystackPayment(reference: string) {
+  if (!hasBinding()) return memoryStore.verifyPaystackPayment(reference);
   await initDb();
   const secretKey = getSecret("PAYSTACK_SECRET_KEY");
   if (!secretKey) {
@@ -921,6 +932,7 @@ export async function verifyPaystackPayment(reference: string) {
 }
 
 export async function processPaystackWebhook(rawBody: string, signature: string | null) {
+  if (!hasBinding()) return memoryStore.processPaystackWebhook();
   const secretKey = getSecret("PAYSTACK_SECRET_KEY");
   if (!secretKey) {
     throw new Error("PAYSTACK_SECRET_KEY is not configured.");
@@ -950,6 +962,7 @@ export async function sendWhatsAppMessage(input: {
   recipientPhone: string;
   body?: string;
 }) {
+  if (!hasBinding()) return memoryStore.sendWhatsAppMessage(input);
   await initDb();
   const db = getBinding();
   const recipientPhone = normalizePhone(input.recipientPhone);
@@ -1136,6 +1149,7 @@ function normalizePhone(phone: string) {
 }
 
 export async function getEscrow(escrowId: string) {
+  if (!hasBinding()) return memoryStore.getEscrow(escrowId);
   await initDb();
   const db = getBinding();
   const escrow = await db
@@ -1162,6 +1176,7 @@ export async function updateEscrowStatus(
   actor: string,
   note: string
 ) {
+  if (!hasBinding()) return memoryStore.updateEscrowStatus(escrowId, status, actor, note);
   await initDb();
   const db = getBinding();
   const releasedAt = status === "released" ? ", released_at = CURRENT_TIMESTAMP, settlement_status = 'settled'" : "";
@@ -1225,6 +1240,7 @@ async function markPaidFromProvider(
 }
 
 export async function openDispute(escrowId: string, reason: string, evidenceNote: string) {
+  if (!hasBinding()) return memoryStore.openDispute(escrowId, reason, evidenceNote);
   await initDb();
   const db = getBinding();
   const disputeId = id("DSP");
@@ -1244,6 +1260,7 @@ export async function openDispute(escrowId: string, reason: string, evidenceNote
 }
 
 export async function resolveDispute(disputeId: string, resolution: string, adminNote = "") {
+  if (!hasBinding()) return memoryStore.resolveDispute(disputeId, resolution, adminNote);
   await initDb();
   const db = getBinding();
   const dispute = await db
@@ -1285,6 +1302,7 @@ export async function updateSellerVerification(
     adminNotes?: string;
   }
 ) {
+  if (!hasBinding()) return memoryStore.updateSellerVerification(sellerId, input);
   await initDb();
   const db = getBinding();
   const current = await db
@@ -1349,6 +1367,7 @@ export async function adminEscrowAction(
   action: "hold" | "release" | "refund" | "mark_delivery_pending" | "clear_hold",
   note = ""
 ) {
+  if (!hasBinding()) return memoryStore.adminEscrowAction(escrowId, action, note);
   await initDb();
   const db = getBinding();
   const escrow = await db
@@ -1417,6 +1436,7 @@ export async function updateDisputeAdmin(
   disputeId: string,
   input: { priority?: string; assignedTo?: string; adminNote?: string }
 ) {
+  if (!hasBinding()) return memoryStore.updateDisputeAdmin(disputeId, input);
   await initDb();
   const db = getBinding();
   const dispute = await db
@@ -1587,6 +1607,7 @@ async function createSettlementEntry(
 }
 
 export async function getPlatformSettings() {
+  if (!hasBinding()) return memoryStore.getPlatformSettings();
   const db = getBinding();
   const existing = await db
     .prepare("SELECT * FROM platform_settings WHERE id = ?")
@@ -1620,6 +1641,7 @@ export async function getPlatformSettings() {
 }
 
 export async function updatePlatformSettings(input: PlatformSettingsInput) {
+  if (!hasBinding()) return memoryStore.updatePlatformSettings(input);
   await initDb();
   const db = getBinding();
   const current = await getPlatformSettings();
@@ -1660,6 +1682,7 @@ export async function updatePlatformSettings(input: PlatformSettingsInput) {
 }
 
 export async function createSellerApplication(input: SellerApplicationInput) {
+  if (!hasBinding()) return memoryStore.createSellerApplication(input);
   await initDb();
   const db = getBinding();
   const applicationId = id("APP");
@@ -1696,6 +1719,7 @@ export async function updateSellerApplication(
   applicationId: string,
   input: { status?: string; adminNote?: string; promoteToPilot?: boolean }
 ) {
+  if (!hasBinding()) return memoryStore.updateSellerApplication(applicationId, input);
   await initDb();
   const db = getBinding();
   const application = await db
@@ -1750,6 +1774,7 @@ export async function updateSellerApplication(
 }
 
 export async function createPilotTestLinks() {
+  if (!hasBinding()) return memoryStore.createPilotTestLinks();
   await initDb();
   const db = getBinding();
   const pilotSellers = await db
@@ -1875,8 +1900,7 @@ async function addEvent(db: D1, escrowId: string, actor: string, type: string, n
 }
 
 function getSecret(name: string) {
-  const value = (env as unknown as Record<string, string | undefined>)[name];
-  return typeof value === "string" && value.length > 0 ? value : "";
+  return getRuntimeSecret(name);
 }
 
 function getPublicBaseUrl() {
