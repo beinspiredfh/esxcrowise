@@ -1,9 +1,9 @@
-import { env } from "cloudflare:workers";
+import { getRuntimeSecret } from "./_runtimeEnv";
 
 const ADMIN_KEY_HEADER = "x-admin-key";
 
 export function requireAdminAccess(request: Request): Response | null {
-  const configuredKey = env.ADMIN_ACCESS_KEY;
+  const configuredKey = getRuntimeSecret("ADMIN_ACCESS_KEY");
   if (!configuredKey) return null;
 
   const suppliedKey =
@@ -20,7 +20,7 @@ export function requireAdminAccess(request: Request): Response | null {
 }
 
 export function isAdminRequest(request: Request): boolean {
-  const configuredKey = env.ADMIN_ACCESS_KEY;
+  const configuredKey = getRuntimeSecret("ADMIN_ACCESS_KEY");
   if (!configuredKey) return true;
 
   const suppliedKey =
